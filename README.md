@@ -161,6 +161,30 @@ After this, future anomalies open + comment on issues as the spec describes.
     NOTICE-DATA.md                — top-level index of per-source NOTICE.md files
     CONTRIBUTING.md               — dev setup, PR process
 
+## Contributing
+
+Contributions are warmly welcomed. The mission is deliberately narrow —
+only data that US institutions publish without keeping public history —
+so a short discussion before writing code saves both sides time.
+
+By intent:
+
+- **Suggesting a source without writing code.** Open a PR adding an entry
+  to [`docs/POTENTIAL-SOURCES.md`](docs/POTENTIAL-SOURCES.md) with the
+  research: upstream URL, retention evidence, expected daily size, format,
+  and a one-paragraph case for why the data is vanishing. The mission
+  filter still applies; the implementation can come later — from you or
+  someone else.
+- **Implementing a new source.** [`docs/ADDING-A-SOURCE.md`](docs/ADDING-A-SOURCE.md)
+  — acceptance bar + step-by-step playbook. Open an issue first.
+- **Already-considered candidates.** [`docs/POTENTIAL-SOURCES.md`](docs/POTENTIAL-SOURCES.md)
+  — tiered list (integrated, candidate, borderline, out-of-scope).
+- **Dev setup, PR process, conventions.** [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- **Governance and what gets merged.** [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
+
+Bug reports with concrete reproductions and documentation typo fixes
+are always welcome without preamble.
+
 ## Licensing
 
 The code carries an MIT licence ([`LICENSE`](LICENSE)). The data under each

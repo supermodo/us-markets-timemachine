@@ -24,7 +24,7 @@ If you are adding a new source under `src/timemachine/sources/<name>/`, you
 1. What upstream files are being mirrored (with URLs).
 2. The publisher's terms — link to their site terms / data licence.
 3. Whether the data is public domain (e.g. US government work under
-   17 U.S.C. § 105) or under proprietary terms.
+   17 U.S.C. section 105) or under proprietary terms.
 4. Why the data is "vanishing" (which is the project's mission filter — see
    [`docs/POTENTIAL-SOURCES.md`](docs/POTENTIAL-SOURCES.md)).
 

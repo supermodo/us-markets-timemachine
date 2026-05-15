@@ -11,6 +11,31 @@ merged.
 
 ---
 
+## Two ways to contribute a source
+
+This document is the **implementer's playbook** — code + tests + manifest +
+NOTICE. But you don't have to implement to contribute. A well-researched
+proposal is itself a useful contribution:
+
+- **Research-only PR** — add a tier entry to
+  [`POTENTIAL-SOURCES.md`](POTENTIAL-SOURCES.md) with: upstream URL,
+  retention evidence (institution's archive policy or proof none exists),
+  expected daily size, file format, and a one-paragraph case for why the
+  data is vanishing. No code, no fork-and-build. The mission filter in section 1
+  still applies — research that fails it gets closed for the same reasons
+  an implementation PR would.
+- **Implementation PR** — the rest of this document. Either promotes an
+  existing entry in `POTENTIAL-SOURCES.md` to "integrated" status, or
+  proposes a fresh source (in which case section 1 doubles as both the research
+  checklist and the build checklist).
+
+A research PR isn't a bypass — it shifts work between contributors, not
+down. The same bar applies. The contributor who lands the
+`POTENTIAL-SOURCES.md` entry has already done the hardest part: proving
+the source is in scope. The implementation PR after it is mostly mechanical.
+
+---
+
 ## 1. The bar (acceptance criteria)
 
 A proposed source MUST clear all of the following:
@@ -98,7 +123,7 @@ Add `data/<name>/NOTICE.md` stating:
 - What upstream files you mirror (with URLs).
 - The publisher's terms — link to their site terms / data policy.
 - Whether the data is public domain (e.g. US government work under
-  17 U.S.C. § 105) or under proprietary terms.
+  17 U.S.C. section 105) or under proprietary terms.
 - Why the data is *vanishing* (one paragraph, evidence-based).
 
 This NOTICE is the authoritative legal statement for `data/<name>/`. Get it
@@ -157,7 +182,7 @@ the layout you expect.
 
 - Update [`POTENTIAL-SOURCES.md`](POTENTIAL-SOURCES.md): move your source
   from Tier A "candidate" to Tier A "integrated" with a link to the PR.
-- Update [`docs/SPEC.md`](SPEC.md) §8 with a one-paragraph case study of
+- Update [`docs/SPEC.md`](SPEC.md) section 8 with a one-paragraph case study of
   your source (file list, why it's vanishing, daily size).
 - Update the "Currently integrated sources" table in
   [`README.md`](../README.md).

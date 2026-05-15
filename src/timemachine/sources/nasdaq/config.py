@@ -2,7 +2,7 @@
 
 A file is captured if and only if it appears in CAPTURED_FILES. Files seen in
 NASDAQ's SymDir/ index that are neither captured nor in IGNORED_FILES become
-discovery findings (spec §4.4).
+discovery findings (spec section 4.4).
 """
 
 import re
@@ -101,14 +101,14 @@ CAPTURED_FILES: tuple[CapturedFile, ...] = (
 
 
 # Files seen in SymDir/ that we deliberately do NOT capture or surface as discoveries.
-# Spec §3.3 + interview answers.
+# Spec section 3.3 + interview answers.
 IGNORED_FILES: frozenset[str] = frozenset(
     {
-        # Options pricing / position files (spec §3.3)
+        # Options pricing / position files (spec section 3.3)
         "options.txt",
         "bxoptions.txt",
         "phlxoptions.csv",
-        # Options strike-ID ZIPs — all venues (spec §3.3, the "*ListedStrikesWithOptionIds set")
+        # Options strike-ID ZIPs — all venues (spec section 3.3, the "*ListedStrikesWithOptionIds set")
         "nasdaqListedStrikesWithOptionIds.zip",
         "phlxListedStrikesWithOptionIds.zip",
         "bxListedStrikesWithOptionIds.zip",

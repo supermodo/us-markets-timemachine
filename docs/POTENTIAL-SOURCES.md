@@ -3,7 +3,7 @@
 A non-binding wish list to guide contributors toward mission-fit proposals.
 Inclusion in this list is **not** a commitment that the source will be
 integrated — it indicates that the source is *plausibly* in scope under the
-mission filter (`docs/SPEC.md` §3.4) and worth a contributor PR following
+mission filter (`docs/SPEC.md` section 3.4) and worth a contributor PR following
 [`ADDING-A-SOURCE.md`](ADDING-A-SOURCE.md).
 
 Conversely, exclusion does not strictly forbid a source — it means we
@@ -60,7 +60,7 @@ authentication" rule. PRs proposing them will be closed.
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | **FINRA Daily Short Sale Volume**                   | FINRA archives back to 2018-08-01 at `https://cdn.finra.org/equity/regsho/daily/{prefix}shvol{YYYYMMDD}.txt` (six prefixes: CNMS, FNQC, FNSQ, FNYX, FNRA, FORF). Complete public history maintained by FINRA. |
 | **OCC Daily Volume / Open Interest**                | `https://marketdata.theocc.com/daily-open-interest?reportDate=MM/DD/YYYY&action=download&format=csv` accepts arbitrary historical dates. Complete archive maintained by OCC. |
-| **TRACE Corporate / Agency Debt files**             | Downloads at `https://download.finratraqs.org` require **NASDAQ Web Security Framework (NWSF) authentication**. Fails §3.4 criterion #2 (publicly accessible without authentication). |
+| **TRACE Corporate / Agency Debt files**             | Downloads at `https://download.finratraqs.org` require **NASDAQ Web Security Framework (NWSF) authentication**. Fails section 3.4 criterion #2 (publicly accessible without authentication). |
 | SEC EDGAR filings (10-K, 10-Q, Form 4, 13F)         | SEC archives every filing indefinitely.                                                                           |
 | Treasury auction results                            | Treasury archives auction history.                                                                                |
 | FRED time series (Fed economic data)                | Fed archives all historical observations.                                                                         |

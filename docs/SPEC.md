@@ -48,10 +48,10 @@ shared.
 
 Each source archives one upstream publisher's vanishing files. A source is a
 self-contained code unit (`src/timemachine/sources/<name>/`) implementing the
-Source protocol from §4.1, plus a self-contained data subtree
+Source protocol from section 4.1, plus a self-contained data subtree
 (`data/<name>/`) carrying its own NOTICE.md and manifest history.
 
-The currently integrated sources are catalogued in §8. A complete tier list
+The currently integrated sources are catalogued in section 8. A complete tier list
 of integrated, candidate, and out-of-scope sources lives in
 [`docs/POTENTIAL-SOURCES.md`](POTENTIAL-SOURCES.md). The bar a proposed
 source must clear is documented in [`docs/ADDING-A-SOURCE.md`](ADDING-A-SOURCE.md).
@@ -71,13 +71,13 @@ Every captured file from every source must be stored:
   history is the file tree itself: browsable, clonable, with no external
   service to depend on.
 
-A fetched file that fails validation (§4.4) must be stored separately under
+A fetched file that fails validation (section 4.4) must be stored separately under
 `data/<source>/_rejected/…`, never under a real date.
 
 Two output forms were considered and set aside: keeping only the latest copy
 with history in commit diffs (rejected — point-in-time reads become commit
 archaeology); and pushing the data to external object storage (held in
-reserve as a fallback if the licensing posture in §6 ever forces code and
+reserve as a fallback if the licensing posture in section 6 ever forces code and
 data apart for a particular source).
 
 ### 3.3 The manifest — the heartbeat
@@ -215,7 +215,7 @@ Not legal advice. Intended posture:
 - The **archived data** is *not* the project's work. Each source's
   `data/<source>/NOTICE.md` is the authoritative statement of provenance and
   terms for that source's subtree.
-  Some sources (e.g. SEC EDGAR — public domain under 17 U.S.C. § 105)
+  Some sources (e.g. SEC EDGAR — public domain under 17 U.S.C. section 105)
   carry no restrictions; others (e.g. NASDAQ Trader — proprietary site
   terms) require careful reading before redistribution.
 - Code and data must be kept cleanly separable, and per-source isolation
@@ -287,7 +287,7 @@ Captured (overwritten in place by SEC; we snapshot):
 | `company_tickers_exchange.json`   | Same data plus listing exchange, in column-array form. ~250 KB.        |
 
 The rest of EDGAR (10-K, 10-Q, Form 4, 13F, the full filing archive) is NOT
-in scope per §3.4: the SEC archives all filings indefinitely.
+in scope per section 3.4: the SEC archives all filings indefinitely.
 
 SEC requires a contactable email in every fetcher's User-Agent. The framework
 reads it from `TIMEMACHINE_CONTACT_EMAIL` env var. Snapshot fails loudly at
@@ -309,4 +309,4 @@ Daily steady-state size: ~400 KB raw / ~80 KB gzipped per day → ~20 MB/year.
 - Cboe Symbol Directory, NYSE Listed Issues, IEX Eligible Symbols, FINRA
   Short Interest, OCC Daily Volume, TRACE Bond Reference — all candidates
   in [`docs/POTENTIAL-SOURCES.md`](POTENTIAL-SOURCES.md), awaiting
-  contributor PRs that pass the §3.4 mission filter.
+  contributor PRs that pass the section 3.4 mission filter.

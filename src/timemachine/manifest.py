@@ -1,4 +1,4 @@
-"""Append-only manifest writer — spec §3.5.
+"""Append-only manifest writer — spec section 3.5.
 
 Every run's outcome is appended to a per-source manifest at
 `data/<source>/manifest-<kind>.json`. Prior runs are never overwritten; the

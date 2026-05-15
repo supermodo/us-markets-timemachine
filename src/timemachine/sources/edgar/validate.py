@@ -7,7 +7,7 @@ NASDAQ uses, but tuned for JSON shapes:
                                      each value `{cik_str, ticker, title}`.
     company_tickers_exchange.json → `{"fields": [...], "data": [[...], ...]}`.
 
-Schema-drift policy mirrors NASDAQ §4.3: a *new* trailing field on the inner
+Schema-drift policy mirrors NASDAQ section 4.3: a *new* trailing field on the inner
 records is logged as `schema_drift` (file is still stored faithfully); a
 *missing* required field or a wholesale shape change is `invalid`.
 

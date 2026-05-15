@@ -1,4 +1,4 @@
-"""Daily capture job — spec §4.1.
+"""Daily capture job — spec section 4.1.
 
 For each declared file in CAPTURED_FILES:
   fetch  →  validate  →  on pass: store at dated path; on fail: park in _rejected/.

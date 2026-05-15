@@ -7,7 +7,7 @@
 - All PRs require BDFL review and approval.
 - All issues are triaged by the BDFL.
 - All releases are tagged by the BDFL.
-- The mission scope (`docs/SPEC.md` §3.4) is set by the BDFL and changes
+- The mission scope (`docs/SPEC.md` section 3.4) is set by the BDFL and changes
   only by deliberate amendment of the SPEC, not by precedent.
 
 The BDFL model is a deliberate choice for a project with real legal

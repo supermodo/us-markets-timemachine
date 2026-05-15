@@ -1,4 +1,4 @@
-"""Mirror-delta job — spec §4.2.
+"""Mirror-delta job — spec section 4.2.
 
 For each archive in ARCHIVES:
     1. FTP-list the upstream directory (only way to enumerate; HTTPS LIST
@@ -6,7 +6,7 @@ For each archive in ARCHIVES:
     2. For each filename matching the archive's pattern, parse the embedded
        YYYYMMDD into a date.
     3. Compute the local target path; skip if already held (idempotent +
-       resumable — spec §4.2).
+       resumable — spec section 4.2).
     4. HTTPS-fetch (faster, more firewall-friendly than FTP RETR), validate
        permissively, store under `data/nasdaq/<archive>/<YYYY>/<original-filename>.gz`.
 

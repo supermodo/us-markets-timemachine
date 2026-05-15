@@ -1,4 +1,4 @@
-"""Content validation rules — spec §4.3 (NASDAQ-specific).
+"""Content validation rules — spec section 4.3 (NASDAQ-specific).
 
 A fetched file passes only if it is not an HTML error page, is above a
 per-file minimum size, has the declared header (or has a new trailing column

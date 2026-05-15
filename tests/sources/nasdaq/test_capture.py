@@ -129,7 +129,7 @@ def test_schema_drift_is_stored_at_canonical_path_with_flag(tmp_path: Path):
     assert entry.status == "schema_drift"
     assert entry.reason is not None
     assert "NewExperimentalColumn" in entry.reason
-    # File IS stored at the canonical dated path (spec §4.3: lenient — store + flag).
+    # File IS stored at the canonical dated path (spec section 4.3: lenient — store + flag).
     assert entry.stored_path == "data/nasdaq/nasdaqtraded/2026/2026-05-14.txt.gz"
     assert (data_root / "nasdaq" / "nasdaqtraded" / "2026" / "2026-05-14.txt.gz").exists()
 

@@ -1,9 +1,9 @@
-"""Filesystem layout for the archive — spec §3.4.
+"""Filesystem layout for the archive — spec section 3.4.
 
 Every path is namespaced by `source` so each source's data, manifests, rejects,
 and discoveries live in a fully self-contained subtree under `data/<source>/`.
 This keeps each source's legal posture, lifecycle, and storage cleanly
-separable (spec §6).
+separable (spec section 6).
 
 Captured files (the daily-overwritten set):
     data/<source>/<dir_name>/<YYYY>/<YYYY-MM-DD>.txt.gz

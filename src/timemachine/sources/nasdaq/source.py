@@ -1,9 +1,9 @@
 """NasdaqSource — implements the Source protocol for the NASDAQ Trader feed.
 
 snapshot() runs the three NASDAQ-specific phases in order:
-    1. capture    — declared §3.1 files, NASDAQ overwrites daily.
-    2. mirror     — §3.2 archived directories (regsho/shorthalts/regnms).
-    3. discovery  — §4.4 auto-stage any new files that appeared upstream.
+    1. capture    — declared section 3.1 files, NASDAQ overwrites daily.
+    2. mirror     — section 3.2 archived directories (regsho/shorthalts/regnms).
+    3. discovery  — section 4.4 auto-stage any new files that appeared upstream.
 
 This wrapper keeps `daily.py` (and the future `cli.py`) free of any NASDAQ
 constants. Callers see a single `snapshot()` returning a flat list of

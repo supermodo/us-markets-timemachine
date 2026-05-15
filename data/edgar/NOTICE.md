@@ -16,7 +16,7 @@ by the SEC itself.
 
 Works of the United States Government — including these SEC-published data
 files — are not subject to copyright protection in the United States under
-[17 U.S.C. § 105](https://www.copyright.gov/title17/92chap1.html#105). They
+[17 U.S.C. section 105](https://www.copyright.gov/title17/92chap1.html#105). They
 are in the public domain and may be redistributed without permission.
 
 The MIT licence in [`LICENSE`](../../LICENSE) covers only the *code* in this

@@ -1,4 +1,4 @@
-"""Discovery — spec §4.4 + interview answers (auto-stage compromise).
+"""Discovery — spec section 4.4 + interview answers (auto-stage compromise).
 
 After capture + mirror, list NASDAQ's SymDir/ index via FTP and diff against
 (declared captured set + IGNORED_FILES) for files, and against
@@ -8,7 +8,7 @@ For each unknown FILE found upstream:
     - auto-fetch + permissive-validate
     - store under `data/nasdaq/_discovered/<filename>/<YYYY>/<YYYY-MM-DD>.gz`
       (NEVER under the canonical path; promotion to canonical requires a human
-      PR per spec §4.4)
+      PR per spec section 4.4)
 
 For each unknown DIRECTORY: flag but DO NOT auto-traverse. Auto-traversing
 unknown directories could trigger thousands of fetches; humans decide whether
