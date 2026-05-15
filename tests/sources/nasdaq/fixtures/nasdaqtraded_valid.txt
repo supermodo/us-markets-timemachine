@@ -1,0 +1,5 @@
+Nasdaq Traded|Symbol|Security Name|Listing Exchange|Market Category|ETF|Round Lot Size|Test Issue|Financial Status|CQS Symbol|NASDAQ Symbol|NextShares
+Y|A|Agilent Technologies, Inc. Common Stock|N| |N|100|N||A|A|N
+Y|ACEP|ARS Core Equity Portfolio ETF|Q|G|Y|100|N|N||ACEP|N
+Y|AMDL|GraniteShares 2x Long AMD Daily ETF|Q|G|Y|100|N|N||AMDL|N
+File Creation Time: 0514202615:42|||||

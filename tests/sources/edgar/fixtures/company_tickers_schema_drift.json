@@ -1,0 +1,7 @@
+{
+  "0": {"cik_str": 320193, "ticker": "AAPL", "title": "Apple Inc.", "exchange": "NASDAQ"},
+  "1": {"cik_str": 789019, "ticker": "MSFT", "title": "Microsoft Corp", "exchange": "NASDAQ"},
+  "2": {"cik_str": 1652044, "ticker": "GOOG", "title": "Alphabet Inc.", "exchange": "NASDAQ"},
+  "3": {"cik_str": 1018724, "ticker": "AMZN", "title": "Amazon.com, Inc.", "exchange": "NASDAQ"},
+  "4": {"cik_str": 1318605, "ticker": "TSLA", "title": "Tesla, Inc.", "exchange": "NASDAQ"}
+}

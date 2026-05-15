@@ -1,0 +1,149 @@
+name: daily
+
+on:
+  schedule:
+    # 00:00 UTC ~= 20:00 ET — post-close, pre-NASDAQ-overnight-refresh.
+    # Every registered source decides via `should_run(today)` whether to act
+    # on a given day; sources that publish on a different cadence (weekday-
+    # only, bi-monthly, etc.) skip themselves cleanly.
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+    inputs:
+      no-notify:
+        description: "Suppress Telegram + GitHub-issue alerts (still prints to stdout)"
+        required: false
+        type: boolean
+        default: false
+      only:
+        description: "Comma-separated list of sources to run (default: all). Lowercase letters, digits, _ and -."
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: write   # commit data + manifests back to main (commit job only)
+  issues: write     # open / comment on anomaly issues (snapshot jobs)
+
+concurrency:
+  group: daily
+  cancel-in-progress: false  # never cancel a partially-captured day
+
+jobs:
+  snapshot:
+    strategy:
+      fail-fast: false   # one source's failure must not cancel the others
+      matrix:
+        source: [nasdaq, edgar]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60   # NASDAQ first-run backfill can stretch; daily steady-state is ~30s
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false   # snapshot jobs do not push
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Run ${{ matrix.source }} snapshot
+        # Inputs are bound to env vars (per GitHub workflow-injection guidance)
+        # rather than interpolated directly into the run script. ONLY_FILTER
+        # is validated against a strict allowlist before any further use.
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TIMEMACHINE_CONTACT_EMAIL: ${{ secrets.TIMEMACHINE_CONTACT_EMAIL }}
+          NO_NOTIFY: ${{ inputs.no-notify }}
+          ONLY_FILTER: ${{ inputs.only }}
+          MATRIX_SOURCE: ${{ matrix.source }}
+        run: |
+          set -eu
+          # Validate ONLY_FILTER strictly before letting it reach a shell pattern.
+          if [ -n "$ONLY_FILTER" ]; then
+            if ! printf '%s' "$ONLY_FILTER" | grep -qE '^[a-z0-9_,-]+$'; then
+              echo "::error::invalid 'only' input; allowed: [a-z0-9_,-]+"
+              exit 2
+            fi
+            # Skip this matrix source if it is not in the comma-separated list.
+            case ",${ONLY_FILTER}," in
+              *,${MATRIX_SOURCE},*) ;;
+              *) echo "skipping ${MATRIX_SOURCE} (not in only=${ONLY_FILTER})"; exit 0 ;;
+            esac
+          fi
+          ARGS=(daily --only "$MATRIX_SOURCE" --output-dir data)
+          if [ "$NO_NOTIFY" = "true" ]; then
+            ARGS+=(--no-notify)
+          fi
+          us-markets-timemachine "${ARGS[@]}"
+
+      - name: Upload ${{ matrix.source }} data
+        if: always()   # capture partial data even if snapshot exits non-zero
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-${{ matrix.source }}
+          path: data/${{ matrix.source }}/
+          if-no-files-found: warn
+          retention-days: 7
+
+  commit:
+    needs: snapshot
+    if: always()   # always try to commit whatever did succeed
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+
+      - name: Download all source artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: data-*
+          path: artifacts/
+
+      - name: Restore artifacts under data/<source>/
+        # Each artifact is named `data-<source>` and contains the contents of
+        # `data/<source>/`; replay them into the working tree at that location.
+        run: |
+          set -eu
+          shopt -s nullglob
+          for src in artifacts/data-*; do
+            name="${src##*/data-}"
+            # Defensive sanity check: source names must be [a-z0-9_-]+.
+            if ! printf '%s' "$name" | grep -qE '^[a-z0-9_-]+$'; then
+              echo "::warning::skipping artifact with unexpected name: $name"
+              continue
+            fi
+            mkdir -p "data/${name}"
+            cp -r "${src}/." "data/${name}/"
+          done
+
+      - name: Commit + push aggregated data
+        # Commit even when individual sources failed — partial data is still
+        # data, and each per-source manifest records every status faithfully.
+        run: |
+          set -e
+          git config user.name "us-markets-timemachine[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No data changes to commit."
+          else
+            DATE_UTC="$(date -u +%F)"
+            git commit -m "snapshot: ${DATE_UTC}"
+            # Race-safe push: if remote moved (manual workflow_dispatch race), rebase + retry once.
+            if ! git push; then
+              echo "push failed; rebasing on origin/main and retrying"
+              git pull --rebase origin main
+              git push
+            fi
+          fi

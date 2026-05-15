@@ -1,0 +1,5 @@
+Symbol|Security Name|Listing Exchange|Market Category
+Y|A|Agilent Technologies, Inc. Common Stock|N
+Y|ACEP|ARS Core Equity Portfolio ETF|Q
+Y|AMDL|GraniteShares 2x Long AMD Daily ETF|Q
+File Creation Time: 0514202615:42|||||
