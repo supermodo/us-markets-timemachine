@@ -38,8 +38,16 @@ def needs_notification(entry: FileEntry) -> bool:
 
 # --- Telegram ---------------------------------------------------------------
 
-# Injectable for tests; defaults to urllib.request.urlopen.
+# Injectable for tests; (request, timeout) positional contract.
 HttpPoster = Callable[[Request, float], object]
+
+
+def _default_opener(req: Request, timeout: float) -> object:
+    # urlopen's signature is (url, data, timeout, ...) — positional-2 is `data`,
+    # not `timeout`. Wrap it so the HttpPoster contract (req, timeout) maps to
+    # the right kwarg, instead of binding `timeout` to `data` and crashing
+    # downstream in http.client.
+    return urlopen(req, timeout=timeout)
 
 
 def telegram_send(message: str, *, opener: HttpPoster | None = None) -> bool:
@@ -55,7 +63,7 @@ def telegram_send(message: str, *, opener: HttpPoster | None = None) -> bool:
         data=payload,
         headers={"Content-Type": "application/json"},
     )
-    poster = opener or urlopen
+    poster = opener or _default_opener
     try:
         with poster(req, 10) as resp:
             status = getattr(resp, "status", None)

@@ -6,12 +6,15 @@ remain pure unit tests.
 
 import json
 import subprocess
+from urllib.request import Request
 
 import pytest
 
+from timemachine import notify
 from timemachine.manifest import FileEntry
 from timemachine.notify import (
     NOTIFY_STATUSES,
+    _default_opener,
     emit_notifications,
     gh_issue_upsert,
     needs_notification,
@@ -57,6 +60,35 @@ def test_NOTIFY_STATUSES_is_a_frozenset_of_four_values():
 
 
 # --- telegram_send ---------------------------------------------------------
+
+
+def test_default_opener_forwards_timeout_as_kwarg(monkeypatch):
+    # Regression: a previous implementation called urlopen(req, 10) positionally,
+    # which bound 10 to urlopen's `data` parameter instead of `timeout`,
+    # crashing downstream in http.client when it tried to send an int as the
+    # request body. The default opener must forward `timeout` as a kwarg.
+    captured: dict = {}
+
+    class FakeResp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    def fake_urlopen(*args, **kwargs):
+        captured["args"] = args
+        captured["kwargs"] = kwargs
+        return FakeResp()
+
+    monkeypatch.setattr(notify, "urlopen", fake_urlopen)
+    with _default_opener(Request("https://example.test/"), 10.0):
+        pass
+
+    # The Request goes positional, timeout MUST be kwarg.
+    assert len(captured["args"]) == 1
+    assert isinstance(captured["args"][0], Request)
+    assert captured["kwargs"] == {"timeout": 10.0}
 
 
 def test_telegram_send_silent_when_env_missing(monkeypatch):
