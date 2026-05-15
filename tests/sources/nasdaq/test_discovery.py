@@ -112,7 +112,7 @@ def test_unknown_file_NEVER_lands_at_canonical_path(tmp_path: Path):
 
 def test_unknown_directory_is_flagged_but_not_traversed(tmp_path: Path):
     data_root = tmp_path / "data"
-    items = [SymDirEntry("regshopilotlist", True)]
+    items = [SymDirEntry("brandnewdir", True)]
     # No fetcher entries — confirms no fetch is attempted.
     fetcher = _fetcher({})
 
@@ -126,7 +126,7 @@ def test_unknown_directory_is_flagged_but_not_traversed(tmp_path: Path):
 
     assert len(entries) == 1
     e = entries[0]
-    assert e.name == "discovery:regshopilotlist/"
+    assert e.name == "discovery:brandnewdir/"
     assert e.status == "discovered"
     assert "not auto-traversed" in (e.reason or "")
     assert e.stored_path is None

@@ -133,7 +133,9 @@ IGNORED_FILES: frozenset[str] = frozenset(
 MIRRORED_ARCHIVES: tuple[str, ...] = ("regsho", "shorthalts", "regnms")
 
 # Archive directories deliberately out of scope.
-IGNORED_ARCHIVES: frozenset[str] = frozenset({"regshopilot"})
+# Reg SHO Pilot Program (regshopilot, regshopilotlist) ended in 2007 — historical
+# only, not vanishing. NASDAQ exposes the directory via FTP but blocks HTTPS browsing.
+IGNORED_ARCHIVES: frozenset[str] = frozenset({"regshopilot", "regshopilotlist"})
 
 
 def captured_by_name(name: str) -> CapturedFile | None:
