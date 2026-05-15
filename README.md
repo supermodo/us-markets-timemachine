@@ -1,4 +1,4 @@
-# us-markets-timemachine
+# US Markets TimeMachine
 
 _A time machine for vanishing US markets data — point-in-time snapshots of
 files US institutions publish without keeping a public history._
