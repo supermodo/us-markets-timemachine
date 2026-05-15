@@ -97,6 +97,19 @@ data still gets committed.
 The worker also opens a labeled GitHub issue per distinct anomaly (deduped
 by title; same anomaly recurring → comment thread, not new issue).
 
+#### First-time label bootstrap
+
+The issue-opening step uses three labels per issue (`worker-anomaly`,
+`status:<x>`, `kind:<y>`). `gh issue create` rejects unknown labels and the
+worker fail-softs on the failure — so on a fresh repo / fork, anomalies
+arrive on Telegram but no GitHub issue ever appears. Run the bootstrap once
+to create the labels (idempotent):
+
+    scripts/bootstrap-labels.sh                # uses gh's default repo
+    scripts/bootstrap-labels.sh OWNER/REPO     # explicit
+
+After this, future anomalies open + comment on issues as the spec describes.
+
 ### Running locally
 
     python3 -m venv .venv
