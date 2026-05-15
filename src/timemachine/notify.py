@@ -85,12 +85,13 @@ def gh_issue_upsert(
     labels: list[str],
     *,
     runner: Runner | None = None,
-) -> bool:
+) -> str | None:
     """Create or update an open GitHub issue keyed by title.
 
-    Returns True on success, False if `gh` is unavailable or fails. Designed
-    to fail-soft: notification failures must not crash the worker, since the
-    worker has already succeeded at the data work by the time we get here.
+    Returns the issue URL on success, None if `gh` is unavailable or fails.
+    Designed to fail-soft: notification failures must not crash the worker,
+    since the worker has already succeeded at the data work by the time we get
+    here.
     """
     run = runner or subprocess.run
     try:
@@ -104,7 +105,7 @@ def gh_issue_upsert(
                 "--search",
                 f'in:title "{title}"',
                 "--json",
-                "number,title",
+                "number,title,url",
             ],
             capture_output=True,
             text=True,
@@ -113,13 +114,13 @@ def gh_issue_upsert(
         )
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError) as e:
         print(f"gh issue list failed: {e}", file=sys.stderr)
-        return False
+        return None
 
     try:
         existing = json.loads(existing_proc.stdout or "[]")
     except json.JSONDecodeError as e:
         print(f"gh issue list returned malformed JSON: {e}", file=sys.stderr)
-        return False
+        return None
 
     match = next((iss for iss in existing if iss.get("title") == title), None)
 
@@ -127,18 +128,21 @@ def gh_issue_upsert(
         if match is not None:
             run(
                 ["gh", "issue", "comment", str(match["number"]), "--body", body],
+                capture_output=True,
+                text=True,
                 check=True,
                 timeout=30,
             )
-        else:
-            cmd = ["gh", "issue", "create", "--title", title, "--body", body]
-            for label in labels:
-                cmd.extend(["--label", label])
-            run(cmd, check=True, timeout=30)
-        return True
+            return match.get("url")
+        cmd = ["gh", "issue", "create", "--title", title, "--body", body]
+        for label in labels:
+            cmd.extend(["--label", label])
+        create_proc = run(cmd, capture_output=True, text=True, check=True, timeout=30)
+        # `gh issue create` prints the new issue URL on stdout.
+        return (create_proc.stdout or "").strip() or None
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError) as e:
         print(f"gh issue upsert failed: {e}", file=sys.stderr)
-        return False
+        return None
 
 
 # --- High-level fan-out ----------------------------------------------------
@@ -148,7 +152,7 @@ def emit_notifications(
     anomalies: list[FileEntry],
     *,
     telegram_fn: Callable[[str], bool] | None = None,
-    issue_fn: Callable[[str, str, list[str]], bool] | None = None,
+    issue_fn: Callable[[str, str, list[str]], str | None] | None = None,
 ) -> None:
     if not anomalies:
         return
@@ -156,8 +160,10 @@ def emit_notifications(
     tg = telegram_fn or telegram_send
     iss = issue_fn or gh_issue_upsert
 
-    tg(_format_telegram_summary(anomalies))
-
+    # Create / comment on issues FIRST so URLs are known when we build the
+    # Telegram summary. Telegram is the on-call channel; including the issue
+    # URL lets the recipient jump straight to the triage thread.
+    urls_by_title: dict[str, str] = {}
     seen_titles: set[str] = set()
     for entry in anomalies:
         title = _issue_title(entry)
@@ -165,17 +171,29 @@ def emit_notifications(
             continue
         seen_titles.add(title)
         same_title = [e for e in anomalies if _issue_title(e) == title]
-        iss(title, _issue_body(same_title), _labels_for(entry))
+        url = iss(title, _issue_body(same_title), _labels_for(entry))
+        if url:
+            urls_by_title[title] = url
+
+    tg(_format_telegram_summary(anomalies, urls_by_title))
 
 
-def _format_telegram_summary(anomalies: list[FileEntry]) -> str:
+def _format_telegram_summary(
+    anomalies: list[FileEntry],
+    urls_by_title: dict[str, str] | None = None,
+) -> str:
+    urls_by_title = urls_by_title or {}
     counts: dict[str, int] = {}
     for e in anomalies:
         counts[e.status] = counts.get(e.status, 0) + 1
     parts = ", ".join(f"{n} {s}" for s, n in sorted(counts.items()))
     lines = [f"us-markets-timemachine: {parts}"]
     for e in anomalies[:10]:
-        lines.append(f"  - [{e.status}] {e.name}{(': ' + e.reason) if e.reason else ''}")
+        suffix = f": {e.reason}" if e.reason else ""
+        lines.append(f"  - [{e.status}] {e.name}{suffix}")
+        url = urls_by_title.get(_issue_title(e))
+        if url:
+            lines.append(f"    {url}")
     if len(anomalies) > 10:
         lines.append(f"  ... +{len(anomalies) - 10} more")
     return "\n".join(lines)

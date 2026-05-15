@@ -127,44 +127,53 @@ def test_telegram_send_dispatches_when_env_present(monkeypatch):
 # --- gh_issue_upsert -------------------------------------------------------
 
 
-def test_gh_issue_upsert_creates_when_no_existing(monkeypatch):
+def test_gh_issue_upsert_creates_when_no_existing_returns_new_url():
     calls: list[list[str]] = []
+    new_url = "https://github.com/owner/repo/issues/42"
 
     def fake_runner(cmd, **kwargs):
         calls.append(cmd)
         if cmd[:3] == ["gh", "issue", "list"]:
             return subprocess.CompletedProcess(cmd, 0, stdout="[]", stderr="")
+        if cmd[:3] == ["gh", "issue", "create"]:
+            # gh prints the new issue URL on stdout.
+            return subprocess.CompletedProcess(cmd, 0, stdout=new_url + "\n", stderr="")
         return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-    assert gh_issue_upsert("X", "body", ["a"], runner=fake_runner) is True
-    assert any(c[:3] == ["gh", "issue", "list"] for c in calls)
+    assert gh_issue_upsert("X", "body", ["a"], runner=fake_runner) == new_url
     assert any(c[:3] == ["gh", "issue", "create"] for c in calls)
     assert not any(c[:3] == ["gh", "issue", "comment"] for c in calls)
 
 
-def test_gh_issue_upsert_comments_when_open_issue_with_same_title_exists():
+def test_gh_issue_upsert_comments_when_open_issue_exists_returns_existing_url():
     calls: list[list[str]] = []
+    existing_url = "https://github.com/owner/repo/issues/42"
 
     def fake_runner(cmd, **kwargs):
         calls.append(cmd)
         if cmd[:3] == ["gh", "issue", "list"]:
             return subprocess.CompletedProcess(
-                cmd, 0, stdout=json.dumps([{"number": 42, "title": "X"}]), stderr=""
+                cmd,
+                0,
+                stdout=json.dumps(
+                    [{"number": 42, "title": "X", "url": existing_url}]
+                ),
+                stderr="",
             )
         return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-    assert gh_issue_upsert("X", "body", ["a"], runner=fake_runner) is True
+    assert gh_issue_upsert("X", "body", ["a"], runner=fake_runner) == existing_url
     comment_cmd = next((c for c in calls if c[:3] == ["gh", "issue", "comment"]), None)
     assert comment_cmd is not None
     assert "42" in comment_cmd
     assert not any(c[:3] == ["gh", "issue", "create"] for c in calls)
 
 
-def test_gh_issue_upsert_returns_false_when_gh_missing():
+def test_gh_issue_upsert_returns_none_when_gh_missing():
     def fake_runner(cmd, **kwargs):
         raise FileNotFoundError("gh: command not found")
 
-    assert gh_issue_upsert("X", "body", [], runner=fake_runner) is False
+    assert gh_issue_upsert("X", "body", [], runner=fake_runner) is None
 
 
 # --- emit_notifications ----------------------------------------------------
@@ -176,7 +185,7 @@ def test_emit_notifications_silent_when_no_anomalies():
     emit_notifications(
         anomalies=[],
         telegram_fn=lambda m: tg_calls.append(m) or True,
-        issue_fn=lambda t, b, lbl: iss_calls.append((t, b, lbl)) or True,
+        issue_fn=lambda t, b, lbl: iss_calls.append((t, b, lbl)) or None,
     )
     assert tg_calls == []
     assert iss_calls == []
@@ -194,7 +203,7 @@ def test_emit_notifications_sends_one_telegram_and_one_issue_per_unique_name():
     emit_notifications(
         anomalies=anomalies,
         telegram_fn=lambda m: tg_calls.append(m) or True,
-        issue_fn=lambda t, b, lbl: iss_calls.append((t, b, lbl)) or True,
+        issue_fn=lambda t, b, lbl: iss_calls.append((t, b, lbl)) or None,
     )
 
     assert len(tg_calls) == 1
@@ -211,6 +220,51 @@ def test_emit_notifications_sends_one_telegram_and_one_issue_per_unique_name():
     assert "[discovered] discovery:regshopilotlist/" in titles
 
 
+def test_emit_notifications_telegram_message_includes_issue_urls():
+    anomalies = [
+        _entry(name="nasdaqtraded.txt", status="invalid", reason="header_mismatch"),
+        _entry(name="discovery:foo/", status="discovered", reason="new dir"),
+    ]
+    urls = {
+        "[invalid] nasdaqtraded.txt": "https://github.com/owner/repo/issues/1",
+        "[discovered] discovery:foo/": "https://github.com/owner/repo/issues/2",
+    }
+    tg_msgs: list[str] = []
+    call_order: list[str] = []
+
+    def telegram_fn(msg):
+        call_order.append("tg")
+        tg_msgs.append(msg)
+        return True
+
+    def issue_fn(title, _body, _labels):
+        call_order.append("iss")
+        return urls[title]
+
+    emit_notifications(anomalies=anomalies, telegram_fn=telegram_fn, issue_fn=issue_fn)
+
+    # Issues must be processed BEFORE telegram so URLs can be inlined.
+    assert call_order == ["iss", "iss", "tg"]
+    msg = tg_msgs[0]
+    assert "https://github.com/owner/repo/issues/1" in msg
+    assert "https://github.com/owner/repo/issues/2" in msg
+
+
+def test_emit_notifications_telegram_still_fires_when_issue_creation_fails():
+    # Issue creation can fail (gh missing, network, etc.) — the worker must
+    # still notify the on-call channel, just without a URL.
+    anomalies = [_entry(name="x.txt", status="invalid", reason="bad")]
+    tg_msgs: list[str] = []
+    emit_notifications(
+        anomalies=anomalies,
+        telegram_fn=lambda m: tg_msgs.append(m) or True,
+        issue_fn=lambda *_: None,
+    )
+    assert len(tg_msgs) == 1
+    assert "x.txt" in tg_msgs[0]
+    assert "https://github.com/" not in tg_msgs[0]
+
+
 def test_emit_notifications_issue_labels_reflect_kind_and_status():
     iss_calls: list[tuple[str, str, list[str]]] = []
     emit_notifications(
@@ -220,7 +274,7 @@ def test_emit_notifications_issue_labels_reflect_kind_and_status():
             _entry(name="discovery:foo.txt", status="discovered"),
         ],
         telegram_fn=lambda _m: True,
-        issue_fn=lambda t, b, lbl: iss_calls.append((t, b, lbl)) or True,
+        issue_fn=lambda t, b, lbl: iss_calls.append((t, b, lbl)) or None,
     )
     by_title = {t: labels for t, _b, labels in iss_calls}
     assert "kind:capture" in by_title["[invalid] nasdaqtraded.txt"]
