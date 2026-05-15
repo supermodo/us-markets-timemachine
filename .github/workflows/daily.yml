@@ -38,13 +38,13 @@ jobs:
     timeout-minutes: 60   # NASDAQ first-run backfill can stretch; daily steady-state is ~30s
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false   # snapshot jobs do not push
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -85,7 +85,7 @@ jobs:
 
       - name: Upload ${{ matrix.source }} data
         if: always()   # capture partial data even if snapshot exits non-zero
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: data-${{ matrix.source }}
           path: data/${{ matrix.source }}/
@@ -99,13 +99,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: true
           fetch-depth: 1
 
       - name: Download all source artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: data-*
           path: artifacts/
