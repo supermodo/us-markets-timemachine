@@ -143213,6 +143213,102 @@
           "source": "nasdaq"
         }
       ]
+    },
+    {
+      "started_at": "2026-07-01T00:36:21Z",
+      "finished_at": "2026-07-01T00:36:29Z",
+      "files": [
+        {
+          "name": "nasdaqtraded.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/nasdaqtraded/2026/2026-06-30.txt.gz",
+          "sha256": "e98c2fde215cc31cd6fbc565f0cd1a33ffe20ca90e191e88bdbd30b0a0ccbf3b",
+          "row_count": 12932,
+          "file_creation_time": "File Creation Time: 0630202618:02|||||",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "nasdaqlisted.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/nasdaqlisted/2026/2026-06-30.txt.gz",
+          "sha256": "c5cce40e9c23986574203ad764718e339a12de3ebbf72b3aac787bd8bd2d919f",
+          "row_count": 5532,
+          "file_creation_time": "File Creation Time: 0630202618:01|||||||",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "otherlisted.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/otherlisted/2026/2026-06-30.txt.gz",
+          "sha256": "90605283bc91765102e87fe4713d2a16407dc08dccda7aa3ca454b0668069f0d",
+          "row_count": 7400,
+          "file_creation_time": "File Creation Time: 0630202618:01||||||",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "TradingSystemAddsDeletes.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/TradingSystemAddsDeletes/2026/2026-06-30.txt.gz",
+          "sha256": "f8b2a2310c6ef89a98384ead84e2720e671f148748c2506f20663563bb8ff406",
+          "row_count": 25,
+          "file_creation_time": "File Creation Time: 0630202618:02|||||",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "NasdaqWhenIssueWhenDistributed.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/NasdaqWhenIssueWhenDistributed/2026/2026-06-30.txt.gz",
+          "sha256": "ce5f436660947e47099bb95645a0666a48bf05754916ceb6820b60a0b046a4cd",
+          "row_count": 5531,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "NasdaqListedRoundLotUpdates.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/NasdaqListedRoundLotUpdates/2026/2026-06-30.txt.gz",
+          "sha256": "cbe0c2b1e2d411a2f4b8c22edd57efb7ff80f9c85caa38e51976c656b9b6d7f8",
+          "row_count": 5412,
+          "file_creation_time": "2026-04-01 04:14:17,,,",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "regsho/nasdaqth20260629.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/regsho/2026/nasdaqth20260629.txt.gz",
+          "sha256": "0d5f35d27682dce266384fd51893d8ebff0cd810451ea3548607a4c3d1871393",
+          "row_count": 76,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "shorthalts/shorthalts20260630.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/shorthalts/2026/shorthalts20260630.txt.gz",
+          "sha256": "feb09f5e2f12e9e86812c057deca0353354130765d5e1f34580cf2c34b66dbb3",
+          "row_count": 611,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "regnms/regnmspilot20260630.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/regnms/2026/regnmspilot20260630.txt.gz",
+          "sha256": "3472bb48b5cc1e5f550a29f3bb2f7d690e6488cefcf969d5f99a93ef702c6d3b",
+          "row_count": 27,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        }
+      ]
     }
   ]
 }
