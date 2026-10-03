@@ -257,6 +257,14 @@ Captured (overwritten daily by NASDAQ; we snapshot):
 | `NasdaqWhenIssueWhenDistributed.txt` | When-issued / when-distributed state flags                                                  |
 | `NasdaqListedRoundLotUpdates.txt`   | Monthly round-lot + average-closing-price series                                             |
 
+Upstream format changes visible in the archive (snapshots are verbatim, so
+readers must handle both shapes):
+
+- `NasdaqListedRoundLotUpdates.txt`, from 2026-10-01: an `issue_id` column was
+  inserted as column 2 (`evaluation_period,issue_id,ticker,average_closing_price,round_lot`)
+  and the trailer gained a matching empty field (`YYYY-MM-DD HH:MM:SS,,,,`).
+  Earlier snapshots carry the 4-column header.
+
 Mirrored (already dated by NASDAQ; we delta-sync):
 
 | Directory     | Range | What it carries                                       |

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from timemachine.sources.nasdaq.config import CapturedFile
+from timemachine.sources.nasdaq.config import CapturedFile, captured_by_name
 from timemachine.sources.nasdaq.validate import validate
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -97,22 +97,40 @@ def test_no_trailer_required_passes_without_trailer():
     assert result.row_count == 3
 
 
-def test_csv_trailer_pattern_matches():
-    csv_payload = (
-        b"evaluation_period,ticker,average_closing_price,round_lot\n"
-        b"202603,AAPL,150.25,100\n"
-        b"202603,GOOG,2800.00,100\n"
-        b"2026-04-01 04:14:17,,,\n"
+def _round_lot_payload(header: str, rows: list[str], trailer: str) -> bytes:
+    return ("\n".join([header, *rows, trailer]) + "\n").encode()
+
+
+ROUND_LOT_SPEC = captured_by_name("NasdaqListedRoundLotUpdates.txt")
+
+
+def test_round_lot_updates_current_format_is_ok():
+    # Format NASDAQ publishes since 2026-10-01: `issue_id` inserted as column 2,
+    # trailer padded to five fields.
+    rows = [f"202609,{20000 + i},T{i:05d},236.25285714,100" for i in range(1_200)]
+    payload = _round_lot_payload(
+        "evaluation_period,issue_id,ticker,average_closing_price,round_lot",
+        rows,
+        "2026-10-01 02:35:26,,,,",
     )
-    spec = _spec(
-        delimiter=",",
-        expected_header="evaluation_period,ticker,average_closing_price,round_lot",
-        trailer_pattern=re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},,,$"),
-    )
-    result = validate(csv_payload, spec)
+    assert ROUND_LOT_SPEC is not None
+    result = validate(payload, ROUND_LOT_SPEC)
     assert result.status == "ok"
-    assert result.row_count == 2
-    assert result.file_creation_time == "2026-04-01 04:14:17,,,"
+    assert result.row_count == 1_200
+    assert result.file_creation_time == "2026-10-01 02:35:26,,,,"
+
+
+def test_round_lot_updates_pre_october_2026_format_is_header_mismatch():
+    rows = [f"202608,T{i:05d},236.25285714,100" for i in range(1_200)]
+    payload = _round_lot_payload(
+        "evaluation_period,ticker,average_closing_price,round_lot",
+        rows,
+        "2026-09-01 02:35:26,,,",
+    )
+    assert ROUND_LOT_SPEC is not None
+    result = validate(payload, ROUND_LOT_SPEC)
+    assert result.status == "invalid"
+    assert result.reason == "header_mismatch"
 
 
 def test_below_min_rows_is_invalid():

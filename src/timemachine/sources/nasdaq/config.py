@@ -30,7 +30,9 @@ class CapturedFile:
 
 
 _FCT = re.compile(r"^File Creation Time:")
-_RLU_TRAILER = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},,,$")
+# Trailer pads empty fields to the column count (",,,," since the 2026-10-01
+# schema change), so accept any run of commas rather than pin the count twice.
+_RLU_TRAILER = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},+$")
 
 
 CAPTURED_FILES: tuple[CapturedFile, ...] = (
@@ -91,10 +93,12 @@ CAPTURED_FILES: tuple[CapturedFile, ...] = (
     CapturedFile(
         name="NasdaqListedRoundLotUpdates.txt",
         delimiter=",",
-        expected_header="evaluation_period,ticker,average_closing_price,round_lot",
+        # `issue_id` inserted as column 2 from the 2026-10-01 file onward; earlier
+        # snapshots in the archive carry the 4-column header without it.
+        expected_header="evaluation_period,issue_id,ticker,average_closing_price,round_lot",
         min_bytes=30_000,
         min_rows=1_000,
-        # CSV trailer: "YYYY-MM-DD HH:MM:SS,,," — empty-field timestamp line.
+        # CSV trailer: "YYYY-MM-DD HH:MM:SS,,,," — empty-field timestamp line.
         trailer_pattern=_RLU_TRAILER,
     ),
 )
