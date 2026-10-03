@@ -9,6 +9,8 @@ For each archive in ARCHIVES:
        resumable — spec section 4.2).
     4. HTTPS-fetch (faster, more firewall-friendly than FTP RETR), validate
        permissively, store under `data/nasdaq/<archive>/<YYYY>/<original-filename>.gz`.
+       An invalid response is parked as evidence under
+       `data/nasdaq/_rejected/<YYYY>/<run-date>/<archive>/<original-filename>.gz`.
 
 First invocation runs the full historical backfill (regsho 2005→, shorthalts
 2011→, regnms 2007→ — combined ~130 MB, ~10k files). Subsequent invocations
@@ -23,10 +25,11 @@ from datetime import date
 from ftplib import FTP
 from pathlib import Path
 
+from timemachine.dates import et_today
 from timemachine.http import FetchError, fetch
 from timemachine.io import sha256_hex, write_gz
 from timemachine.manifest import FileEntry
-from timemachine.paths import mirrored_path
+from timemachine.paths import mirrored_path, rejected_path
 from timemachine.sources.nasdaq.validate import validate_simple
 
 SOURCE = "nasdaq"
@@ -65,6 +68,7 @@ def run_mirror(
     data_root: Path,
     lister: Lister | None = None,
     fetcher: Fetcher | None = None,
+    today: date | None = None,
     dry_run: bool = False,
     max_per_archive: int | None = None,
     fetch_pause_seconds: float = DEFAULT_FETCH_PAUSE_SECONDS,
@@ -72,6 +76,7 @@ def run_mirror(
 ) -> list[FileEntry]:
     list_fn: Lister = lister if lister is not None else ftp_list_archive
     fetch_fn: Fetcher = fetcher if fetcher is not None else fetch
+    d = today if today is not None else et_today()
     entries: list[FileEntry] = []
     for archive in ARCHIVES:
         try:
@@ -85,6 +90,7 @@ def run_mirror(
                 filenames,
                 data_root=data_root,
                 fetcher=fetch_fn,
+                today=d,
                 dry_run=dry_run,
                 max_files=max_per_archive,
                 pause=fetch_pause_seconds,
@@ -100,6 +106,7 @@ def _mirror_one(
     *,
     data_root: Path,
     fetcher: Fetcher,
+    today: date,
     dry_run: bool,
     max_files: int | None,
     pause: float,
@@ -147,15 +154,17 @@ def _mirror_one(
         sha = sha256_hex(content)
 
         if result.status == "invalid":
-            # Mirror invalids do NOT go to _rejected/ — they go nowhere on disk;
-            # the failure is recorded in the manifest. Reason: mirror files come
-            # from a directory listing and a transient invalid response shouldn't
-            # leave a persistent artifact at the upstream-filename path.
+            # Park the bad response as evidence, keyed by run date (not the
+            # filename's date) so each failed attempt is kept. The real archive
+            # path stays empty, so the next run retries the file.
+            rejected = rejected_path(data_root, SOURCE, f"{archive.name}/{fname}", today)
+            if not dry_run:
+                write_gz(rejected, content)
             out.append(
                 FileEntry(
                     name=f"{archive.name}/{fname}",
                     status="invalid",
-                    stored_path=None,
+                    stored_path=_repo_relative(rejected, data_root),
                     sha256=sha,
                     row_count=0,
                     file_creation_time=None,

@@ -6,11 +6,12 @@ manifest shape); here we focus on the mirror-specific semantics:
   - Filenames that don't match the per-archive pattern are silently skipped.
   - A file already held locally is skipped (idempotency).
   - Fetch failures land as `missing`, not `invalid`.
-  - HTML responses land as `invalid` (no on-disk artifact).
+  - HTML responses land as `invalid`, parked as evidence under `_rejected/`.
   - Listing failure for one archive doesn't affect the others.
 """
 
 import gzip
+from datetime import date
 from pathlib import Path
 
 from timemachine.http import FetchError
@@ -189,14 +190,38 @@ def test_fetch_error_records_missing_status_with_no_disk_artifact(tmp_path: Path
     assert not (data_root / "nasdaq" / "regsho").exists()
 
 
-def test_html_response_records_invalid_no_disk_artifact(tmp_path: Path):
+def test_html_response_records_invalid_and_parks_evidence_in_rejected(tmp_path: Path):
+    data_root = tmp_path / "data"
+    listings = {"regsho": ["nasdaqth20240514.txt"], "shorthalts": [], "regnms": []}
+    html = b"<!DOCTYPE html><html><body>404</body></html>"
+    fetcher = _make_fetcher(
+        {"https://www.nasdaqtrader.com/dynamic/SymDir/regsho/nasdaqth20240514.txt": html}
+    )
+
+    entries = run_mirror(
+        data_root=data_root,
+        lister=_make_lister(listings),
+        fetcher=fetcher,
+        today=date(2024, 5, 15),
+        sleep=lambda _s: None,
+    )
+
+    parked_rel = "nasdaq/_rejected/2024/2024-05-15/regsho/nasdaqth20240514.txt.gz"
+    assert len(entries) == 1
+    assert entries[0].status == "invalid"
+    assert entries[0].reason == "html_response"
+    assert entries[0].stored_path == f"data/{parked_rel}"
+    assert gzip.decompress((data_root / parked_rel).read_bytes()) == html
+    # Never stored at the real archive path — the next run retries it.
+    assert not (data_root / "nasdaq" / "regsho").exists()
+
+
+def test_html_response_in_dry_run_parks_nothing(tmp_path: Path):
     data_root = tmp_path / "data"
     listings = {"regsho": ["nasdaqth20240514.txt"], "shorthalts": [], "regnms": []}
     fetcher = _make_fetcher(
         {
-            "https://www.nasdaqtrader.com/dynamic/SymDir/regsho/nasdaqth20240514.txt": (
-                b"<!DOCTYPE html><html><body>404</body></html>"
-            ),
+            "https://www.nasdaqtrader.com/dynamic/SymDir/regsho/nasdaqth20240514.txt": b"<html></html>"
         }
     )
 
@@ -204,14 +229,13 @@ def test_html_response_records_invalid_no_disk_artifact(tmp_path: Path):
         data_root=data_root,
         lister=_make_lister(listings),
         fetcher=fetcher,
+        today=date(2024, 5, 15),
+        dry_run=True,
         sleep=lambda _s: None,
     )
 
-    assert len(entries) == 1
     assert entries[0].status == "invalid"
-    assert entries[0].reason == "html_response"
-    assert entries[0].stored_path is None
-    assert not (data_root / "nasdaq" / "regsho").exists()
+    assert not (data_root / "nasdaq").exists()
 
 
 def test_max_per_archive_limits_fetches(tmp_path: Path):
