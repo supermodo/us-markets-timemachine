@@ -31,3 +31,6 @@ venv/
 
 # Local scratch
 /tmp-output/
+
+# supermodo local run state
+.skills/
