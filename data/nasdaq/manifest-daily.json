@@ -151741,6 +151741,102 @@
           "source": "nasdaq"
         }
       ]
+    },
+    {
+      "started_at": "2026-10-07T03:34:16Z",
+      "finished_at": "2026-10-07T03:34:21Z",
+      "files": [
+        {
+          "name": "nasdaqtraded.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/nasdaqtraded/2026/2026-10-06.txt.gz",
+          "sha256": "109c208f863180b572ff47f66e4c70c130761c35ccc53cfa633b89d24982d9f1",
+          "row_count": 13289,
+          "file_creation_time": "File Creation Time: 1006202621:33|||||",
+          "reason": "already_existed_not_overwritten",
+          "source": "nasdaq"
+        },
+        {
+          "name": "nasdaqlisted.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/nasdaqlisted/2026/2026-10-06.txt.gz",
+          "sha256": "077d90341317d46519ccf819e3b91a8965e66e0d70fd09326cf6aaf2564e49ff",
+          "row_count": 5636,
+          "file_creation_time": "File Creation Time: 1006202621:31|||||||",
+          "reason": "already_existed_not_overwritten",
+          "source": "nasdaq"
+        },
+        {
+          "name": "otherlisted.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/otherlisted/2026/2026-10-06.txt.gz",
+          "sha256": "7acbeea31ef6f94979bf055247e8544f884738e4c3d85d791f80d267e8ead981",
+          "row_count": 7653,
+          "file_creation_time": "File Creation Time: 1006202621:31||||||",
+          "reason": "already_existed_not_overwritten",
+          "source": "nasdaq"
+        },
+        {
+          "name": "TradingSystemAddsDeletes.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/TradingSystemAddsDeletes/2026/2026-10-06.txt.gz",
+          "sha256": "af245d6fb304a5ad6da972d3333ab2f64f73b56979c28ffdbffe9bcce44c3554",
+          "row_count": 16,
+          "file_creation_time": "File Creation Time: 1006202621:33|||||",
+          "reason": "already_existed_not_overwritten",
+          "source": "nasdaq"
+        },
+        {
+          "name": "NasdaqWhenIssueWhenDistributed.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/NasdaqWhenIssueWhenDistributed/2026/2026-10-06.txt.gz",
+          "sha256": "6d3dcef145d0bb382012e8597f8428d1365c50f69e9af1f9b687f79797892d63",
+          "row_count": 5636,
+          "file_creation_time": null,
+          "reason": "already_existed_not_overwritten",
+          "source": "nasdaq"
+        },
+        {
+          "name": "NasdaqListedRoundLotUpdates.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/NasdaqListedRoundLotUpdates/2026/2026-10-06.txt.gz",
+          "sha256": "844f0b46fc7aa9b735aa8c033c3f97fffe85b9507bb26b6f64b40597afef8b99",
+          "row_count": 5636,
+          "file_creation_time": "2026-10-01 02:35:26,,,,",
+          "reason": "already_existed_not_overwritten",
+          "source": "nasdaq"
+        },
+        {
+          "name": "regsho/nasdaqth20261006.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/regsho/2026/nasdaqth20261006.txt.gz",
+          "sha256": "50f55d9cb15771689394ff09c2198fe6e2756cc8398dea65dd7f28886deb17b0",
+          "row_count": 76,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "shorthalts/shorthalts20261006.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/shorthalts/2026/shorthalts20261006.txt.gz",
+          "sha256": "aaba5fb74506cece1df13b30f5a8d999211de5c69261405ba388e696198bf950",
+          "row_count": 532,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "regnms/regnmspilot20261006.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/regnms/2026/regnmspilot20261006.txt.gz",
+          "sha256": "22581651ec13a86a3aa0b6b85e41e50658fc55f15304bf5b488b4ed071bca521",
+          "row_count": 27,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        }
+      ]
     }
   ]
 }
