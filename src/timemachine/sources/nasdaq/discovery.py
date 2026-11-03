@@ -23,7 +23,6 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
-from ftplib import FTP
 from pathlib import Path
 
 from timemachine.dates import et_today
@@ -37,12 +36,11 @@ from timemachine.sources.nasdaq.config import (
     IGNORED_FILES,
     MIRRORED_ARCHIVES,
 )
+from timemachine.sources.nasdaq.ftp import list_directory
 from timemachine.sources.nasdaq.validate import validate_simple
 
 SOURCE = "nasdaq"
 
-FTP_HOST = "ftp.nasdaqtrader.com"
-SYMDIR_FTP_DIR = "/SymbolDirectory"
 SYMDIR_HTTPS_BASE = "https://www.nasdaqtrader.com/dynamic/SymDir"
 DEFAULT_PAUSE_SECONDS = 0.05
 
@@ -207,12 +205,7 @@ def _repo_relative(target: Path, data_root: Path) -> str:
 
 def ftp_list_symdir(*, timeout: float = 30.0) -> list[SymDirEntry]:
     """List SymDir/ via FTP. DOS-style LIST output marks directories with <DIR>."""
-    lines: list[str] = []
-    with FTP(FTP_HOST, timeout=timeout) as conn:
-        conn.login()  # anonymous
-        conn.cwd(SYMDIR_FTP_DIR)
-        conn.retrlines("LIST", lines.append)
-    return [_parse_dos_line(line) for line in lines if line.strip()]
+    return [_parse_dos_line(line) for line in list_directory(timeout=timeout)]
 
 
 def _parse_dos_line(line: str) -> SymDirEntry:
