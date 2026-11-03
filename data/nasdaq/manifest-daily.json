@@ -154093,6 +154093,112 @@
           "source": "nasdaq"
         }
       ]
+    },
+    {
+      "started_at": "2026-11-03T04:46:10Z",
+      "finished_at": "2026-11-03T04:47:26Z",
+      "files": [
+        {
+          "name": "nasdaqtraded.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/nasdaqtraded/2026/2026-11-02.txt.gz",
+          "sha256": "91ea2e4b3dfbdd9f68bacea6ceba43032bbd0d138c4f8f706d8ccaf8286cbb77",
+          "row_count": 13279,
+          "file_creation_time": "File Creation Time: 1102202621:33|||||",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "nasdaqlisted.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/nasdaqlisted/2026/2026-11-02.txt.gz",
+          "sha256": "15df8ccabdff9933b759996adc14235177c220e23726643eec6d40ae35dc71f5",
+          "row_count": 5614,
+          "file_creation_time": "File Creation Time: 1102202621:31|||||||",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "otherlisted.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/otherlisted/2026/2026-11-02.txt.gz",
+          "sha256": "c7fbd8e846207f97cf6d605673bfe506bd0d08cbab40fe802d53d2c2146f44b0",
+          "row_count": 7665,
+          "file_creation_time": "File Creation Time: 1102202621:31||||||",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "TradingSystemAddsDeletes.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/TradingSystemAddsDeletes/2026/2026-11-02.txt.gz",
+          "sha256": "cc1834b85f2c78181e4f381acc16d373cbc9660fe6f7eca6097cff68002fdd01",
+          "row_count": 10,
+          "file_creation_time": "File Creation Time: 1102202621:33|||||",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "NasdaqWhenIssueWhenDistributed.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/NasdaqWhenIssueWhenDistributed/2026/2026-11-02.txt.gz",
+          "sha256": "5f2020036f804cbf20c96151fb23397faf4f91c312c32b72336bcb8f684f48f4",
+          "row_count": 5614,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "NasdaqListedRoundLotUpdates.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/NasdaqListedRoundLotUpdates/2026/2026-11-02.txt.gz",
+          "sha256": "844f0b46fc7aa9b735aa8c033c3f97fffe85b9507bb26b6f64b40597afef8b99",
+          "row_count": 5636,
+          "file_creation_time": "2026-10-01 02:35:26,,,,",
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "regsho/nasdaqth20261102.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/regsho/2026/nasdaqth20261102.txt.gz",
+          "sha256": "be1a0b29d134eda31300ec2f3462f5d585d784f96b420b8e09d5e5c5cc19a72b",
+          "row_count": 84,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "shorthalts/<listing>",
+          "status": "missing",
+          "stored_path": null,
+          "sha256": null,
+          "row_count": 0,
+          "file_creation_time": null,
+          "reason": "ftp_list_failed: timed out",
+          "source": "nasdaq"
+        },
+        {
+          "name": "regnms/regnmspilot20261102.txt",
+          "status": "ok",
+          "stored_path": "data/nasdaq/regnms/2026/regnmspilot20261102.txt.gz",
+          "sha256": "efc9d15fc7e4f456d0fa1493d2ef2a7d6359cdd3730f8920c483ebd1c7368785",
+          "row_count": 27,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "nasdaq"
+        },
+        {
+          "name": "discovery:<listing>",
+          "status": "missing",
+          "stored_path": null,
+          "sha256": null,
+          "row_count": 0,
+          "file_creation_time": null,
+          "reason": "ftp_list_failed: timed out",
+          "source": "nasdaq"
+        }
+      ]
     }
   ]
 }
