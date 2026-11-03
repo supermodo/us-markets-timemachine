@@ -22,7 +22,6 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
-from ftplib import FTP
 from pathlib import Path
 
 from timemachine.dates import et_today
@@ -30,12 +29,11 @@ from timemachine.http import FetchError, fetch
 from timemachine.io import sha256_hex, write_gz
 from timemachine.manifest import FileEntry
 from timemachine.paths import mirrored_path, rejected_path
+from timemachine.sources.nasdaq.ftp import FTP_BASE_DIR, list_directory
 from timemachine.sources.nasdaq.validate import validate_simple
 
 SOURCE = "nasdaq"
 
-FTP_HOST = "ftp.nasdaqtrader.com"
-FTP_BASE_DIR = "/SymbolDirectory"
 HTTPS_BASE = "https://www.nasdaqtrader.com/dynamic/SymDir"
 
 # Minimum byte floor for mirror files. Note: shorthalts20110225.txt = 19 bytes
@@ -226,12 +224,8 @@ def ftp_list_archive(archive_name: str, *, timeout: float = 30.0) -> list[str]:
         MM-DD-YY  HH:MMam/pm   <BYTES> <FILENAME>
     where filename can contain spaces (split with maxsplit=3).
     """
-    lines: list[str] = []
-    with FTP(FTP_HOST, timeout=timeout) as ftp_conn:
-        ftp_conn.login()  # anonymous
-        ftp_conn.cwd(f"{FTP_BASE_DIR}/{archive_name}")
-        ftp_conn.retrlines("LIST", lines.append)
-    return [_filename_from_dos_listing(line) for line in lines if line.strip()]
+    lines = list_directory(f"{FTP_BASE_DIR}/{archive_name}", timeout=timeout)
+    return [_filename_from_dos_listing(line) for line in lines]
 
 
 def _filename_from_dos_listing(line: str) -> str:
