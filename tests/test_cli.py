@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import pytest
@@ -145,3 +145,15 @@ def test_dry_run_does_not_write_manifest(fake_registry, tmp_path):
     cli.main(["daily", "--dry-run", "--output-dir", str(out), "--no-notify"])
     assert not (out / "nasdaq" / "manifest-daily.json").exists()
     assert fake_registry["nasdaq"].snapshot_calls[0]["dry_run"] is True
+
+
+def test_daily_passes_sources_the_previous_day_before_the_cutoff(
+    tmp_path: Path, fake_registry, monkeypatch
+):
+    # 2026-10-06 00:06 EDT: the run that used to take the next evening's date.
+    now = datetime(2026, 10, 6, 4, 6, tzinfo=UTC)
+    monkeypatch.setattr("timemachine.dates.now_utc", lambda: now)
+
+    cli.main(["daily", "--output-dir", str(tmp_path), "--no-notify"])
+
+    assert fake_registry["nasdaq"].snapshot_calls[0]["today"] == date(2026, 10, 5)

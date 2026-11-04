@@ -1,13 +1,39 @@
-from datetime import date
+from datetime import UTC, date, datetime
 
-from timemachine.dates import date_path_parts, et_today, now_utc_iso
+import pytest
+
+from timemachine import dates
+from timemachine.dates import date_path_parts, now_utc_iso, snapshot_date
 
 
-def test_et_today_returns_a_date():
-    d = et_today()
-    assert isinstance(d, date)
-    # Sanity bracket: not before this project's launch year, not absurdly future.
-    assert 2025 <= d.year <= 2100
+@pytest.mark.parametrize(
+    ("utc_now", "expected"),
+    [
+        # Evening runs keep their own date, in EST and in EDT.
+        ("2026-11-04T04:11:00", date(2026, 11, 3)),  # Tue 23:11 EST
+        ("2026-10-07T03:34:00", date(2026, 10, 6)),  # Tue 23:34 EDT
+        # Runs GitHub delayed past midnight ET belong to the evening they missed
+        # (the real 2026-10-06 and 2026-10-13 runs).
+        ("2026-10-06T04:06:00", date(2026, 10, 5)),  # 00:06 EDT
+        ("2026-10-13T04:48:00", date(2026, 10, 12)),  # 00:48 EDT
+        # Later delays, and same-morning reruns, up to the cutoff.
+        ("2026-08-28T08:15:00", date(2026, 8, 27)),  # 04:15 EDT
+        ("2026-11-04T14:59:00", date(2026, 11, 3)),  # 09:59 EST
+        ("2026-10-06T13:59:00", date(2026, 10, 5)),  # 09:59 EDT
+        # From the cutoff on, a run belongs to the current day.
+        ("2026-11-04T15:00:00", date(2026, 11, 4)),  # 10:00 EST
+        ("2026-10-06T14:00:00", date(2026, 10, 6)),  # 10:00 EDT
+        # Month and year boundaries.
+        ("2027-01-01T13:00:00", date(2026, 12, 31)),  # 08:00 EST
+    ],
+)
+def test_snapshot_date_treats_runs_before_cutoff_as_previous_day(
+    monkeypatch, utc_now: str, expected: date
+):
+    now = datetime.fromisoformat(utc_now).replace(tzinfo=UTC)
+    monkeypatch.setattr(dates, "now_utc", lambda: now)
+
+    assert snapshot_date() == expected
 
 
 def test_now_utc_iso_ends_with_z():

@@ -25,7 +25,7 @@ from collections.abc import Iterable
 from datetime import date
 from pathlib import Path
 
-from timemachine.dates import et_today, now_utc_iso
+from timemachine.dates import now_utc_iso, snapshot_date
 from timemachine.manifest import FileEntry, RunEntry, append_run
 from timemachine.notify import emit_notifications, needs_notification
 from timemachine.paths import manifest_path
@@ -39,7 +39,7 @@ EXIT_BAD_USAGE = 2
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     if args.subcommand == "list-sources":
-        return _list_sources(today=et_today())
+        return _list_sources(today=snapshot_date())
     if args.subcommand == "daily":
         return _run_daily(args)
     raise AssertionError(f"unhandled subcommand: {args.subcommand!r}")  # argparse should prevent
@@ -51,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _run_daily(args: argparse.Namespace) -> int:
-    today = et_today()
+    today = snapshot_date()
     try:
         selected = _select_sources(only=args.only, exclude=args.exclude)
     except SourceSelectionError as e:

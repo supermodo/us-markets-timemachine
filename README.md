@@ -79,7 +79,9 @@ be run locally for development.
 
 ### How autonomous mode works
 
-The `.github/workflows/daily.yml` workflow fires every day at **00:00 UTC**.
+The `.github/workflows/daily.yml` workflow fires every day at **00:00 UTC**,
+though GitHub usually starts it a few hours late. A run before 10:00 ET counts
+as the previous day, so a late start keeps its proper date.
 A matrix job runs every registered source in parallel; a final commit job
 downloads each source's data artifact and produces a single daily commit.
 
@@ -126,6 +128,7 @@ After this, future anomalies open + comment on issues as the spec describes.
     us-markets-timemachine daily --only edgar --dry-run --no-notify --output-dir /tmp/tm
 
     # surgical: rerun NASDAQ only after a transient failure
+    # (a rerun from 10:00 ET claims that day's date and blocks that night's capture)
     us-markets-timemachine daily --only nasdaq
 
     # see what's registered and what each source thinks of today

@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
-from timemachine.dates import et_today
+from timemachine.dates import snapshot_date
 from timemachine.http import FetchError, fetch
 from timemachine.io import sha256_hex, write_gz
 from timemachine.manifest import FileEntry
@@ -67,7 +67,7 @@ def run_discovery(
 ) -> list[FileEntry]:
     list_fn: Lister = lister if lister is not None else ftp_list_symdir
     fetch_fn: Fetcher = fetcher if fetcher is not None else fetch
-    d = today if today is not None else et_today()
+    d = today if today is not None else snapshot_date()
 
     try:
         upstream = list_fn()

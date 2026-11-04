@@ -2,7 +2,11 @@ name: daily
 
 on:
   schedule:
-    # 00:00 UTC ~= 20:00 ET — post-close, pre-NASDAQ-overnight-refresh.
+    # Aims for after NASDAQ's evening refresh (~21:33 ET) and before midnight ET.
+    # 00:00 UTC is earlier than that, but GitHub has been starting this cron 2-5h
+    # late. Don't move it earlier: that misses the refresh, and each evening's file
+    # is gone by the overnight refresh (~03:00 ET). Runs before 10:00 ET count as
+    # the previous day (see `snapshot_date`), so a slip past midnight is safe.
     # Every registered source decides via `should_run(today)` whether to act
     # on a given day; sources that publish on a different cadence (weekday-
     # only, bi-monthly, etc.) skip themselves cleanly.

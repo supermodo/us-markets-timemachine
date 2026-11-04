@@ -11,7 +11,7 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
-from timemachine.dates import et_today
+from timemachine.dates import snapshot_date
 from timemachine.http import FetchError, fetch
 from timemachine.io import sha256_hex, write_gz
 from timemachine.manifest import FileEntry
@@ -33,7 +33,7 @@ def run_capture(
     specs: tuple[CapturedFile, ...] | None = None,
 ) -> list[FileEntry]:
     f: Fetcher = fetcher if fetcher is not None else fetch
-    d = today if today is not None else et_today()
+    d = today if today is not None else snapshot_date()
     file_specs = specs if specs is not None else CAPTURED_FILES
     return [_capture_one(spec, data_root=data_root, today=d, fetcher=f, dry_run=dry_run) for spec in file_specs]
 

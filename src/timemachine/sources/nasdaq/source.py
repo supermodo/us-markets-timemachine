@@ -44,6 +44,6 @@ class NasdaqSource:
         dry_run: bool = False,
     ) -> Iterable[FileEntry]:
         capture_entries = run_capture(data_root=data_root, today=today, dry_run=dry_run)
-        mirror_entries = run_mirror(data_root=data_root, dry_run=dry_run)
+        mirror_entries = run_mirror(data_root=data_root, today=today, dry_run=dry_run)
         discovery_entries = run_discovery(data_root=data_root, today=today, dry_run=dry_run)
         return [*capture_entries, *mirror_entries, *discovery_entries]

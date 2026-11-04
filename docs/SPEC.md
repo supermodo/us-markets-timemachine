@@ -71,6 +71,26 @@ Every captured file from every source must be stored:
   history is the file tree itself: browsable, clonable, with no external
   service to depend on.
 
+The date in a daily path is the run's **snapshot date**: its ET date, except
+that a run before 10:00 ET counts as the previous day. The daily cron can start
+after midnight ET, and because captures never overwrite, using the calendar date
+would make the next evening's run lose its snapshot. A file captured late can
+therefore be newer than its date suggests; the manifest records what was read.
+
+This rule did not exist before 2026-11-04, and the affected files stay as stored:
+
+| Path date    | Holds                                 | Effect                                                    |
+| ------------ | ------------------------------------- | --------------------------------------------------------- |
+| `2026-08-27` | 2026-08-26 evening files              | No `2026-08-26` file                                      |
+| `2026-08-28` | 2026-08-28 overnight refresh (~03:00) | Evening of 2026-08-27 not captured                        |
+| `2026-08-29` | 2026-08-28 evening files              | Next run refused; files unchanged on the Saturday         |
+| `2026-10-06` | 2026-10-05 evening files              | No `2026-10-05` file; 2026-10-06 evening snapshot refused |
+| `2026-10-13` | 2026-10-12 evening files              | No `2026-10-12` file; 2026-10-13 evening snapshot refused |
+
+The table describes NASDAQ's trailer times. EDGAR files carry the same path dates
+for 2026-08-27, 2026-08-28, 2026-10-06 and 2026-10-13. Check the run times in
+`manifest-daily.json` when reading these dates.
+
 A fetched file that fails validation (section 4.4) must be stored separately under
 `data/<source>/_rejected/…`, never under a real date.
 
