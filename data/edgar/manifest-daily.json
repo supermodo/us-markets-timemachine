@@ -3613,6 +3613,32 @@
           "source": "edgar"
         }
       ]
+    },
+    {
+      "started_at": "2026-11-24T07:46:58Z",
+      "finished_at": "2026-11-24T07:46:58Z",
+      "files": [
+        {
+          "name": "company_tickers.json",
+          "status": "ok",
+          "stored_path": "data/edgar/company_tickers/2026/2026-11-23.gz",
+          "sha256": "6b59e0ed15932cceb6917a79be900062751c66b6c038168abd9d4bff64ae0210",
+          "row_count": 10399,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "edgar"
+        },
+        {
+          "name": "company_tickers_exchange.json",
+          "status": "ok",
+          "stored_path": "data/edgar/company_tickers_exchange/2026/2026-11-23.gz",
+          "sha256": "a4549a73d027584e90490c5b8ff207de3e6a607768c7de416144ef52e6474c84",
+          "row_count": 10400,
+          "file_creation_time": null,
+          "reason": null,
+          "source": "edgar"
+        }
+      ]
     }
   ]
 }
